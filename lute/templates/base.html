@@ -125,9 +125,159 @@
           <li><a href="https://discord.gg/CzFUQP5m8u" target="_blank">Discord</a></li>
         </ul>
       </div>
+      <div class="menu-item">
+        <span id="menu_character">{{ words_known }} 🇱🇺</span>
+        <!-- <iframe src="https://apption.co/embeds/65f75c71" name="test" height="120" width="300">You need a Frames Capable browser to view this content.</iframe>    -->
+      </div>
     </div>
   </div>
   {% endif %}
+
+  <script>
+    function scoreHabitUp(resp, config){
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function(){
+        if(xhr.readyState === 4){
+          console.log("habit fetched");
+          // console.log(xhr.response);
+        }
+      }
+      xhr.open("POST", "https://habitica.com/api/v3/tasks/"+resp.data.tasksOrder.habits[0]+"/score/up", true);
+      // Get Your API USER going to habitica web site then User -> Settings -> Site Data -> User ID
+      xhr.setRequestHeader("x-api-user", config["x-api-user"]);
+      // Get Your API USER going to habitica web site then User -> Settings -> Site Data -> API Token
+      xhr.setRequestHeader("x-api-key", config["x-api-key"]); // Replace [YOUR-API-TOKEN] with actual API token
+      xhr.send();
+    }
+
+    function fetchHabiticaCharacter(config) {
+
+      // console.log(config);
+      // Here you should use the Habitica API to get the user's character data
+      // This is a placeholder for the API call
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", "https://habitica.com/api/v3/user", true);
+
+      // Get Your API USER going to habitica web site then User -> Settings -> Site Data -> User ID
+      xhr.setRequestHeader("x-api-user", config["x-api-user"]);
+      // Get Your API USER going to habitica web site then User -> Settings -> Site Data -> API Token
+      xhr.setRequestHeader("x-api-key", config["x-api-key"]); // Replace [YOUR-API-TOKEN] with actual API token
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+          // JSON.parse does not evaluate the attacker's scripts.
+          var resp = JSON.parse(xhr.responseText);
+          // items -> gear -> equipped
+          // console.log(resp.data.items.gear.equipped);
+          // items -> gear -> costume
+          // console.log(resp.data.items.gear.costume);
+          // Rebuilding character
+          // Head 
+          var head = document.createElement('span');
+          head.style.position = "absolute";
+          head.style.zIndex = 1;
+          var headImg = document.createElement('img');
+          headImg.src = "https://habitica-assets.s3.amazonaws.com/mobileApp/images/skin_" + resp.data.preferences.skin + ".png";
+          // console.log(headImg.src);
+          head.appendChild(headImg);
+          // resp.data.items.gear.equipped.back);
+          // Head Costume
+          var costumeHead = document.createElement('span');
+          costumeHead.style.position = "absolute";
+          costumeHead.style.zIndex = 2;
+          var costumeHeadImg = document.createElement('img');
+          costumeHeadImg.src = "https://habitica-assets.s3.amazonaws.com/mobileApp/images/" + resp.data.items.gear.costume.head.replace("_base","") + ".png";
+          // console.log(costumeHeadImg.src);
+          costumeHead.appendChild(costumeHeadImg);
+          // Hair
+          var hair = document.createElement('span');
+          hair.style.position = "absolute";
+          hair.style.zIndex = 2;
+          var hairImg = document.createElement('img');
+          hairImg.src = "https://habitica-assets.s3.amazonaws.com/mobileApp/images/hair_bangs_" + resp.data.preferences.hair.bangs + "_" + resp.data.preferences.hair.color + ".png";
+          // console.log(hairImg.src);
+          hair.appendChild(hairImg);
+
+          // Equipped Eyewear
+          var eyewear = document.createElement('span');
+          eyewear.style.position = "absolute";
+          eyewear.style.zIndex = 2;
+          var eyewearImg = document.createElement('img');
+          eyewearImg.src = "https://habitica-assets.s3.amazonaws.com/mobileApp/images/" + resp.data.items.gear.equipped.eyewear + ".png";
+          // console.log(eyewearImg.src);
+          eyewear.appendChild(eyewearImg);
+
+          // Helmet
+          var equippedHead = document.createElement('span');
+          equippedHead.style.position = "absolute";
+          equippedHead.style.zIndex = 3;
+          var equippedHeadImg = document.createElement('img');
+          equippedHeadImg.src = "https://habitica-assets.s3.amazonaws.com/mobileApp/images/" + resp.data.items.gear.equipped.head + ".png";
+          // console.log(equippedHeadImg.src);
+          equippedHead.appendChild(equippedHeadImg);
+          // Armor
+          var equippedArmor = document.createElement('span');
+          equippedArmor.style.position = "absolute";
+          equippedArmor.style.zIndex = 4;
+          var equippedArmorImg = document.createElement('img');
+          equippedArmorImg.src = "https://habitica-assets.s3.amazonaws.com/mobileApp/images/"+ resp.data.preferences.size + "_" + resp.data.items.gear.equipped.armor + ".png";
+          // console.log(equippedArmorImg.src);
+          equippedArmor.appendChild(equippedArmorImg);
+          // Weapon
+          var equippedWeapon = document.createElement('span');
+          equippedWeapon.style.position = "absolute";
+          equippedWeapon.style.zIndex = 5;
+          var equippedWeaponImg = document.createElement('img');
+          equippedWeaponImg.src = "https://habitica-assets.s3.amazonaws.com/mobileApp/images/" + resp.data.items.gear.equipped.weapon + ".png";
+          // console.log(equippedWeaponImg.src);
+          equippedWeapon.appendChild(equippedWeaponImg);
+          // Shield 
+          var equippedShield = document.createElement('span');
+          equippedShield.style.position = "absolute";
+          equippedShield.style.zIndex = 6;
+          var equippedShieldImg = document.createElement('img');
+          equippedShieldImg.src = "https://habitica-assets.s3.amazonaws.com/mobileApp/images/" + resp.data.items.gear.equipped.shield + ".png";
+          // console.log(equippedShieldImg.src);
+          equippedShield.appendChild(equippedShieldImg);
+          //Later currentMount
+
+          var characterElement = document.getElementById('menu_character');
+          characterElement.title = 'Character Name: ' + resp.data.profile.name + '<br> HP: ' + resp.data.stats.hp + '<br> MP: ' + resp.data.stats.mp + '<br> EXP: ' + resp.data.stats.exp + '<br> Gold: ' + resp.data.stats.gp;
+          var characterDiv = document.createElement('div');
+          characterDiv.style.width = "90px";
+          characterDiv.style.height = "90px";
+          characterDiv.style.margin = "0px auto 0px 24px;"
+          // newDiv.appendChild(equippedBack);
+          characterDiv.appendChild(head);
+          characterDiv.appendChild(costumeHead);
+          characterDiv.appendChild(equippedHead);
+          characterDiv.appendChild(hair);
+          characterDiv.appendChild(eyewear);
+          characterDiv.appendChild(equippedArmor);
+          characterDiv.appendChild(equippedWeapon);
+          characterDiv.appendChild(equippedShield);
+          // You will need to add more code here to handle the response and update the DOM accordingly
+          characterElement.appendChild(characterDiv);
+          // console.log(resp.data.tasksOrder);
+
+          //Action Buttons
+          // var button1 = document.createElement('button');
+          // button1.textContent = "Dummy1";
+          // button1.onclick = scoreHabitUp(resp,config);
+          // characterElement.appendChild(button1);
+        }
+      }
+      xhr.send();
+    }
+
+    var config = {
+      "x-api-user" : "{{ habitica_api_user }}",
+      "x-api-key" : "{{ habitica_api_key }}"
+    };
+    
+    fetchHabiticaCharacter(config);
+
+  </script>
 
   {% with messages = get_flashed_messages() %}
   {% for message in messages %}

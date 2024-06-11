@@ -12,9 +12,9 @@ from lute.models.book import Book, Text
 from lute.models.setting import UserSetting
 from lute.db import db
 
+from decouple import config
 
 bp = Blueprint("read", __name__, url_prefix="/read")
-
 
 def _render_book_page(book, pagenum):
     """
@@ -46,6 +46,11 @@ def read(bookid):
 
     This is called from the book listing, on Lute index.
     """
+
+    habitica_api_user = config('x-api-user')
+    habitica_api_key = config('x-api-key')
+    habit_id = config('habit_id')
+
     book = Book.find(bookid)
     if book is None:
         flash(f"No book matching id {bookid}")

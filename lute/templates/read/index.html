@@ -141,7 +141,9 @@
           onclick="$('#actionposter').submit(); return false;"
           >Archive book</a>
         |
-        <a href="/" tabindex="-1">Home</a>
+        <a href="/" tabindex="-1">Home</a> |
+        <a href="javascript:void(0)" tabindex="-1" onclick="scoreHabitUp()">Habitica & Home</a>
+        <audio id="myAudio" src="{{ url_for('static', filename='audio/clozemaster_correct.mp3') }}" type="audio/mp3">
       </p>
 
       <form
@@ -529,7 +531,34 @@
     });
   }
 
+  function scoreHabitUp(){
+    var config = {
+    "x-api-user" : "{{ habitica_api_user }}",
+    "x-api-key" : "{{ habitica_api_key }}",
+    "habit-id" : "{{ habit_id }}"
+  };
 
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function(){
+      if(xhr.readyState === 4){
+        console.log("habit fetched");
+        console.log(xhr.response);
+      }
+    }
+    xhr.open("POST", "https://habitica.com/api/v3/tasks/"+config["habit-id"]+"/score/up", true);
+    // Get Your API USER going to habitica web site then User -> Settings -> Site Data -> User ID
+    xhr.setRequestHeader("x-api-user", config["x-api-user"]);
+    // Get Your API USER going to habitica web site then User -> Settings -> Site Data -> API Token
+    xhr.setRequestHeader("x-api-key", config["x-api-key"]); // Replace [YOUR-API-TOKEN] with actual API token
+    xhr.send();
+
+    var audio = document.getElementById("myAudio");
+    audio.play();
+
+    setTimeout(function() {
+      window.location.href = "/";
+  }, 2000); // 2000 milliseconds = 5 seconds
+  }
 </script>
 
 {% endblock %}

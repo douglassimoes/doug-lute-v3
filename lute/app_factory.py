@@ -53,6 +53,8 @@ from lute.themes.routes import bp as themes_bp
 from lute.stats.routes import bp as stats_bp
 from lute.cli.commands import bp as cli_bp
 
+from lute.models.term import Term
+from decouple import config
 
 def _setup_app_dir(dirname, readme_content):
     "Create one app directory."
@@ -124,6 +126,10 @@ def _add_base_routes(app, app_config):
 
     @app.route("/")
     def index():
+        habitica_api_user = config('x-api-user')
+        habitica_api_key = config('x-api-key')
+        habit_id = config('habit_id')
+
         is_production = not lute.db.demo.contains_demo_data()
         bkp_settings = BackupSettings.get_backup_settings()
 
@@ -146,12 +152,20 @@ def _add_base_routes(app, app_config):
             and warning_msg != ""
         )
 
+        all_words = db.session.query(Term).all()
+        lux_words = [word for word in all_words if word.language.name == 'Luxembourgish' and word.status ==99]
+        # print(lux_words)
+
         return render_template(
             "index.html",
             hide_homelink=True,
             dbname=app_config.dbname,
             datapath=app_config.datapath,
             tutorial_book_id=lute.db.demo.tutorial_book_id(),
+            words_known=len(lux_words),
+            habitica_api_user=habitica_api_user,
+            habitica_api_key=habitica_api_key,
+            habit_id=habit_id, 
             have_books=have_books,
             have_languages=have_languages,
             language_choices=language_choices,
