@@ -53,8 +53,12 @@ from lute.themes.routes import bp as themes_bp
 from lute.stats.routes import bp as stats_bp
 from lute.cli.commands import bp as cli_bp
 
+#doug-lute-imports
 from lute.models.term import Term
+from lute.models.auth_user import AuthUser
+from werkzeug.security import generate_password_hash, check_password_hash
 from decouple import config
+from flask_login import login_user, login_required, logout_user,LoginManager
 
 def _setup_app_dir(dirname, readme_content):
     "Create one app directory."
@@ -124,7 +128,32 @@ def _add_base_routes(app, app_config):
         }
         return ret
 
+    @app.route("/login", methods=['GET','POST'])
+    def login():
+        if request.method == 'POST':
+            # login code goes here
+            email = request.form.get('email')
+            password = request.form.get('password')
+
+            user = AuthUser.query.filter_by(email=email).first()
+
+            print(user.email)
+            
+            # check if the user actually exists
+            # take the user-supplied password, hash it, and compare it to the hashed password in the database
+            if not user or not check_password_hash(user.password, password):
+                flash('Please check your login details and try again.')
+                return redirect('/login') # if the user doesn't exist or password is wrong, reload the page
+            
+            print("Login successfull!")
+            login_user(user)
+            return redirect('/')
+
+        # if the above check passes, then we know the user has the right credentials
+        return render_template('login.html')
+
     @app.route("/")
+    @login_required
     def index():
         habitica_api_user = config('x-api-user')
         habitica_api_key = config('x-api-key')
@@ -405,6 +434,17 @@ def create_app(
         extra_config = {}
     outfunc("Initializing app.")
     app = _create_app(app_config, extra_config)
+
+    login_manager = LoginManager()
+    login_manager.login_view = 'login'
+    login_manager.init_app(app)
+
+    from lute.models.auth_user import AuthUser
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        # since the user_id is just the primary key of our user table, use it in the query for the user
+        return AuthUser.query.get(int(user_id))
 
     _init_parser_plugins(app_config.plugin_datapath, outfunc)
 

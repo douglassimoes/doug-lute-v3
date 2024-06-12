@@ -178,7 +178,6 @@ def empty():
     "Show an empty/blank page."
     return ""
 
-
 @bp.route("/termform/<int:langid>/<text>", methods=["GET", "POST"])
 def term_form(langid, text):
     """
