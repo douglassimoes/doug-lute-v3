@@ -532,6 +532,7 @@
   }
 
   function scoreHabitUp(){
+    handle_page_done(false, 0);
     var config = {
     "x-api-user" : "{{ habitica_api_user }}",
     "x-api-key" : "{{ habitica_api_key }}",
