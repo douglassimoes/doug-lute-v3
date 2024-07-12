@@ -69,6 +69,7 @@
           <button id="delete" type="button" class="btn" onclick="deleteTerm()">Delete</button>
           {% endif %}
           <button id="submit" type="submit" title="Shortcut: Control+Enter" class="btn btn-primary">Save</button>
+          <button type="submit" style="display: none;" id="hidden-submit">Submit</button>
       </div>
     </div>
   </form>
@@ -365,6 +366,16 @@
     enable_disable_sync_status_checkbox();
   });  // end $(document).ready
 
+  document.addEventListener('DOMContentLoaded', function () {
+            const radioButtons = document.querySelectorAll('input[type="radio"][name="status"]');
+            const hiddenSubmit = document.getElementById('hidden-submit');
+
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    hiddenSubmit.click();
+                });
+            });
+  });
 
   function deleteTerm() {
     const msg = "Are you sure you want to delete this term?\n\n" +
