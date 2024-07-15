@@ -107,6 +107,10 @@ def new():
 
     if form.validate_on_submit():
         try:
+            # TODO: generate TTS when checked 
+            # if form.generate_audio:
+            #     generate_
+            #     form.audiofile.data = FileStorage(temp_file, filename='generated_audio.mp3')
             form.populate_obj(b)
             book = repo.add(b)
             repo.commit()

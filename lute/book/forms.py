@@ -4,7 +4,7 @@ Book create/edit forms.
 
 import json
 from flask import request
-from wtforms import StringField, SelectField, TextAreaField, IntegerField, HiddenField
+from wtforms import StringField, SelectField, TextAreaField, IntegerField, HiddenField, BooleanField
 from wtforms import ValidationError
 from wtforms.validators import DataRequired, Length, NumberRange
 from flask_wtf import FlaskForm
@@ -51,6 +51,7 @@ class NewBookForm(FlaskForm):
         ],
     )
     book_tags = StringField("Tags")
+    generate_audio = BooleanField("Generate TTS",validators=[DataRequired()])
 
     def __init__(self, *args, **kwargs):
         "Call the constructor of the superclass (FlaskForm)"
